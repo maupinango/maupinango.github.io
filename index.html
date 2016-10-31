@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
+    <title>My Diary</title>
+    <link rel='stylesheet' href='style.css' type='text/css' media='all' charset='utf-8'/>
+  </head>
+  <input id="UniqueIdUpdate" type="hidden" value="" />
+  <input id="zone" type="hidden" value="" />
+  <body>
+    <div id='page'>
+      <header>
+        <h1>My Diary</h1>
+      </header>
+      <div id='content' class='container_12'>
+        <div id="deleteConfirm" class='divDelete'>
+        </div>
+        <div id='add-text' class='grid_12'>
+          <div class='label'>Subject</div>
+          <div id='subjectValidate' class='validate'>Subject is required</div>        
+          <div class='field'><input id='SubjectText' type='text'/></div>
+          <div class='label'>Body</div>
+          <div id='bodyValidate' class='validate'>Body is required</div>
+          <div class='field'><textarea id='BodyText'></textarea></div>
+          <div class='actions'>
+            <button id='addButton' onclick='okEdit()'>Add</button>
+            <button onclick='cancelEdit()'>Cancel</button>
+          </div>
+        </div>
+        <div id="AddButton" class='grid_3'>
+          <nav>
+            <ul>
+              <li><a href='#' onclick='addTxt()'>Add New Entry</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="title entry grid_9">
+            <h4>My Entries</h4>
+        </div>
+        <div class='grid_9' id='posts'>
+        </div>
+      </div>
+      <footer>
+          My diary V1.0 © 2016.
+      </footer>
+    </div>
+  </body>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
+  <script src='main.js'></script>
+</html>

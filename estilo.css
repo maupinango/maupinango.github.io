@@ -1,5 +1,5 @@
 select {
-    min-width: 175px;
+    min-width: 165px;
 }
 
 textarea {
@@ -9,7 +9,7 @@ textarea {
 .btn {
     margin: 10px 0;
     padding: 5px;
-    min-width: 175px;
+    min-width: 165px;
 }
 
 .clear {
@@ -18,6 +18,17 @@ textarea {
 
 .contenedor {
     float: left;
+}
+
+.caja {
+    min-height: 115px;
+    border-bottom: 4px solid grey;
+    max-width: 340px;
+}
+
+.linea {
+    border-bottom: 4px solid grey;
+    max-width: 340px;
 }
 
 .logo {
@@ -32,5 +43,5 @@ textarea {
 
 #equipos {
     min-height: 350px;
-    min-width: 350px;
+    min-width: 340px;
 }

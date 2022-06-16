@@ -3,74 +3,79 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="txt/stylesheet" href="estilo.css">
+        <link rel="stylesheet" href="estilo.css">
         <title>Equipos</title>
     </head>
     <body>
 
         <h1>Distribución de Equipos</h1>
 
-        <h2>Juveniles</h2>
-        <select id="juveniles" multiple>
-            <option value="ana parucho">ana parucho</option>
-            <option value="anais osta">anais osta</option>
-            <option value="angely correa">angely correa</option>
-            <option value="anye mendoza">anye mendoza</option>
-            <option value="brisly hernandez">brisly hernandez</option>
-            <option value="camila ramos">camila ramos</option>
-            <option value="dana vazquez">dana vazquez</option>
-            <option value="david navas">david navas</option>
-            <option value="david trujillo">david trujillo</option>
-            <option value="diego villegas">diego villegas</option>
-            <option value="elias moros">elias moros</option>
-            <option value="ezequiel lucero">ezequiel lucero</option>
-            <option value="fabian paredes">fabian paredes</option>
-            <option value="javier">javier</option>
-            <option value="jesus ruda">jesus ruda</option>
-            <option value="jose hernandez">jose hernandez</option>
-            <option value="josue bermejo">josue bermejo</option>
-            <option value="kevin rondon">kevin rondon</option>
-            <option value="keyner rondon">keyner rondon</option>
-            <option value="lorena sarmiento">lorena sarmiento</option>
-            <option value="moises araujo">moises araujo</option>
-            <option value="nathasha ladera">nathasha ladera</option>
-            <option value="nicole peñaloza">nicole peñaloza</option>
-            <option value="obdiumar arias">obdiumar arias</option>
-            <option value="obduin arias">obduin arias</option>
-            <option value="samuel linares">samuel linares</option>
-            <option value="samuel trujillo">samuel trujillo</option>
-            <option value="samuel uzcategui">samuel uzcategui</option>
-            <option value="sebastian maldonado">sebastian maldonado</option>
-            <option value="shaila plasencia">shaila plasencia</option>
-            <option value="shantal plasencia">shantal plasencia</option>
-            <option value="sofia villegas">sofia villegas</option>
-            <option value="sophia baldeon">sophia baldeon</option>
-            <option value="uriel gonzalez">uriel gonzalez</option>
-            <option value="valeria duran">valeria duran</option>
-            <option value="valeria navas">valeria navas</option>
-            <option value="wilmelis sandoval">wilmelis sandoval</option>
-            <option value="yoangel">yoangel</option>
-        </select><br>
-        <button onclick="agregar('juveniles')">Agregar Juveniles</button><br>
-        <textarea id="listaJuveniles"></textarea><br><br>
+        <div class="contenedor">
+            <h2>Juveniles</h2>
+            <select id="juveniles" multiple>
+                <option value="ana parucho">ana parucho</option>
+                <option value="anais osta">anais osta</option>
+                <option value="angely correa">angely correa</option>
+                <option value="anye mendoza">anye mendoza</option>
+                <option value="brisly hernandez">brisly hernandez</option>
+                <option value="camila ramos">camila ramos</option>
+                <option value="dana vazquez">dana vazquez</option>
+                <option value="david navas">david navas</option>
+                <option value="david trujillo">david trujillo</option>
+                <option value="diego villegas">diego villegas</option>
+                <option value="elias moros">elias moros</option>
+                <option value="ezequiel lucero">ezequiel lucero</option>
+                <option value="fabian paredes">fabian paredes</option>
+                <option value="javier">javier</option>
+                <option value="jesus ruda">jesus ruda</option>
+                <option value="jose hernandez">jose hernandez</option>
+                <option value="josue bermejo">josue bermejo</option>
+                <option value="kevin rondon">kevin rondon</option>
+                <option value="keyner rondon">keyner rondon</option>
+                <option value="lorena sarmiento">lorena sarmiento</option>
+                <option value="moises araujo">moises araujo</option>
+                <option value="nathasha ladera">nathasha ladera</option>
+                <option value="nicole peñaloza">nicole peñaloza</option>
+                <option value="obdiumar arias">obdiumar arias</option>
+                <option value="obduin arias">obduin arias</option>
+                <option value="samuel linares">samuel linares</option>
+                <option value="samuel trujillo">samuel trujillo</option>
+                <option value="samuel uzcategui">samuel uzcategui</option>
+                <option value="sebastian maldonado">sebastian maldonado</option>
+                <option value="shaila plasencia">shaila plasencia</option>
+                <option value="shantal plasencia">shantal plasencia</option>
+                <option value="sofia villegas">sofia villegas</option>
+                <option value="sophia baldeon">sophia baldeon</option>
+                <option value="uriel gonzalez">uriel gonzalez</option>
+                <option value="valeria duran">valeria duran</option>
+                <option value="valeria navas">valeria navas</option>
+                <option value="wilmelis sandoval">wilmelis sandoval</option>
+                <option value="yoangel">yoangel</option>
+            </select><br>
+            <button onclick="agregar('juveniles')">Agregar Juveniles</button><br>
+            <textarea id="listaJuveniles"></textarea><br><br>
+        </div>
+        
+        <div class="contenedor">
+            <h2>Líderes</h2>
+            <select id="lideres" multiple>
+                <option value="LEYLA Y ADRIANA">LEYLA Y ADRIANA</option>
+                <option value="LUIS">LUIS</option>
+                <option value="MAURICIO">MAURICIO</option>
+                <option value="JOSUE">JOSUE</option>
+                <option value="AINHOA">AINHOA</option>
+                <option value="DANIELA">DANIELA</option>
+                <option value="JOSE">JOSE</option>
+            </select><br>
+            <button onclick="agregar('lideres')">Agregar Líderes</button><br>
+            <textarea id="listaLideres"></textarea><br><br>
+        </div>
 
-        <h2>Líderes</h2>
-        <select id="lideres" multiple>
-            <option value="LEYLA Y ADRIANA">LEYLA Y ADRIANA</option>
-            <option value="LUIS">LUIS</option>
-            <option value="MAURICIO">MAURICIO</option>
-            <option value="JOSUE">JOSUE</option>
-            <option value="AINHOA">AINHOA</option>
-            <option value="DANIELA">DANIELA</option>
-            <option value="JOSE">JOSE</option>
-        </select><br>
-        <button onclick="agregar('lideres')">Agregar Líderes</button><br>
-        <textarea id="listaLideres"></textarea><br><br>
-
-        <button onclick="distribuir()">Distribuir</button><br><br>
+        <div class="clear"></div>
+        <button onclick="distribuir()">Distribuir</button><br>
 
         <h2>Equipos</h2>
-        <textarea id="equipos" readonly></textarea>
+        <textarea id="equipos"></textarea>
         
         <script src="funcion.js"></script>
     </body>

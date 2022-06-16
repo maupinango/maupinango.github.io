@@ -1,0 +1,16 @@
+textarea {
+    min-height: 200px;
+}
+
+.contenedor {
+    float: left;
+}
+
+.clear {
+    clear: both;
+}
+
+#equipos {
+    min-height: 350px;
+    min-width: 350px;
+}

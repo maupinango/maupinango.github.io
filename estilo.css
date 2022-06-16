@@ -1,13 +1,33 @@
+select {
+    min-width: 175px;
+}
+
 textarea {
     min-height: 200px;
+}
+
+.btn {
+    margin: 10px 0;
+    padding: 5px;
+    min-width: 175px;
+}
+
+.clear {
+    clear: both;
 }
 
 .contenedor {
     float: left;
 }
 
-.clear {
-    clear: both;
+.logo {
+    float: left;
+    margin: 20px;
+}
+
+.tituloPrincipal {
+    float: left;
+    max-width: 200px;
 }
 
 #equipos {

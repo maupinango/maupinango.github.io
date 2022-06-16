@@ -67,16 +67,18 @@ function distribuir()
             {
                 distibucion += (i+1) + ') ' + arrayLideres[i] + ': \n';
                 let cant = 0;
+                let adicional = false;
 
                 for(;j < arrayJuveniles.length && cant < cantMax; j++)
                 {
                     distibucion += arrayJuveniles[j] + '\n';
                     cant++;
 
-                    if(cantFaltante > 0)
+                    if(cantFaltante > 0 && !adicional)
                     {
                         j++;
                         distibucion += arrayJuveniles[j] + '\n';
+                        adicional = true;
                         cantFaltante--;
                     }
                 }

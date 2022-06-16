@@ -8,7 +8,9 @@
     </head>
     <body>
 
-        <h1>Distribución de Equipos</h1>
+        <img class="logo" src="img/logo.jpg" width="100">
+        <h1 class="tituloPrincipal">Distribución de Equipos</h1>
+        <div class="clear"></div>
 
         <div class="contenedor">
             <h2>Juveniles</h2>
@@ -52,7 +54,7 @@
                 <option value="wilmelis sandoval">wilmelis sandoval</option>
                 <option value="yoangel">yoangel</option>
             </select><br>
-            <button onclick="agregar('juveniles')">Agregar Juveniles</button><br>
+            <button class="btn" onclick="agregar('juveniles')">Agregar Juveniles</button><br>
             <textarea id="listaJuveniles"></textarea><br><br>
         </div>
         
@@ -67,12 +69,12 @@
                 <option value="DANIELA">DANIELA</option>
                 <option value="JOSE">JOSE</option>
             </select><br>
-            <button onclick="agregar('lideres')">Agregar Líderes</button><br>
+            <button class="btn" onclick="agregar('lideres')">Agregar Líderes</button><br>
             <textarea id="listaLideres"></textarea><br><br>
         </div>
 
         <div class="clear"></div>
-        <button onclick="distribuir()">Distribuir</button><br>
+        <button class="btn" onclick="distribuir()">Distribuir</button><br>
 
         <h2>Equipos</h2>
         <textarea id="equipos"></textarea>

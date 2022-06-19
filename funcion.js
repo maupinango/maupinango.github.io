@@ -61,7 +61,8 @@ function distribuir()
             let cantFaltante = arrayJuveniles.length % arrayLideres.length;
             let j = 0;
 
-            arrayJuveniles.sort(function() {return Math.random() - 0.5});
+            for(let i = 0; i < 5; i++)
+                arrayJuveniles.sort(function() {return Math.random() - 0.5});
             
             for(let i = 0; i < arrayLideres.length; i++)
             {

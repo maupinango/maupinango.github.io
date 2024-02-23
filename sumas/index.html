@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="estilo.css">
+    <title>Sumas</title>
+</head>
+<body>
+
+    <h1>Sumas</h1>
+
+    <div id="contenedor">
+        <div>
+            <p>Pregunta <span id="cantPre">1</span> de 20</p>
+        </div>
+        <div>
+            <p><span id="n1"></span> + <span id="n2"></span> = <span id="resultado">?</span></p>
+            <!--Agregar name a los primeros 6 botones-->
+            <button name="btnopcion" onclick="practica(0)"></button>
+            <button name="btnopcion" onclick="practica(1)"></button>
+            <button name="btnopcion" onclick="practica(2)"></button>
+            <br>
+            <button name="btnopcion" onclick="practica(3)"></button>
+            <button name="btnopcion" onclick="practica(4)"></button>
+            <button name="btnopcion" onclick="practica(5)"></button>
+        </div>
+    </div>
+    <div id="puntostotales" style="display: none;">
+        <p>Puntuación: <span id="total"></span>/20</p>
+        <img id="imagen" src="img/img1.png" width="200" height="200">
+        <br>
+        <button class="reset" onclick="reset()">Otra vez</button>
+    </div>
+    
+    <script src="funcion.js"></script>
+</body>
+</html>

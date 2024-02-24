@@ -55,7 +55,7 @@ function finalizar()
     document.querySelector('#contenedor').style.display = 'none';
     document.querySelector('#puntostotales').style.display = 'block';
     document.querySelector('#total').innerHTML = puntosAcum;
-    let posImg = Math.floor(Math.random() * 5) + 1;
+    let posImg = Math.floor(Math.random() * 17) + 1;
     document.querySelector('#imagen').src = 'img/img' + posImg + '.png';
     final.play();
 }

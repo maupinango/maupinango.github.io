@@ -19,7 +19,7 @@ const cargarSonido = function (fuente)
 
 const correcto = cargarSonido("audio/correct.mp3");
 const incorrecto = cargarSonido("audio/wrong.mp3");
-const final = cargarSonido("audio/final.mp3");
+const final = cargarSonido("audio/felicidades.mp3");
 
 function practica(btnPos)
 {

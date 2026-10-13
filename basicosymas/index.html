@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Básicos y más - Gestión</title>
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ================= PANTALLA DE LOGIN ================= -->
+    <div id="login-screen" class="screen active">
+        <div class="login-card">
+            <h1>🛒 Básicos y más</h1>
+            <p>Ingresa tus credenciales para continuar</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Correo electrónico" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" class="btn-primary">Iniciar Sesión</button>
+                <p id="login-error" class="error-msg"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= PANTALLA PRINCIPAL (APP) ================= -->
+    <div id="app-screen" class="screen">
+        <!-- Encabezado -->
+        <header class="app-header">
+            <div class="header-info">
+                <h2>🛒 Básicos y más</h2>
+                <span id="bcv-rate" class="tasa-badge">Cargando tasa...</span>
+            </div>
+            <button id="logout-btn" class="btn-icon" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
+        </header>
+
+        <!-- Navegación por pestañas -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="inventario"><i class="fas fa-box"></i> Inventario</button>
+            <button class="tab-btn" data-tab="ventas"><i class="fas fa-cash-register"></i> Ventas</button>
+        </nav>
+
+        <!-- Contenido de Pestañas -->
+        <main class="content">
+            
+            <!-- PESTAÑA INVENTARIO -->
+            <section id="tab-inventario" class="tab-content active">
+                <div class="section-header">
+                    <h3>Productos en Stock</h3>
+                    <button id="btn-add-product" class="btn-primary btn-sm"><i class="fas fa-plus"></i> Nuevo</button>
+                </div>
+                <div id="product-list" class="product-list">
+                    <!-- Aquí JS insertará los productos -->
+                </div>
+            </section>
+
+            <!-- PESTAÑA VENTAS -->
+            <section id="tab-ventas" class="tab-content">
+                <div class="sales-layout">
+                    <!-- Buscador y Carrito -->
+                    <div class="sales-panel">
+                        <h3><i class="fas fa-search"></i> Buscar Producto</h3>
+                        <div class="search-box">
+                            <input type="text" id="search-product" placeholder="Escribe el nombre del producto...">
+                        </div>
+                        <div id="search-results" class="search-results"></div>
+                        
+                        <h3 style="margin-top: 20px;"><i class="fas fa-shopping-cart"></i> Carrito</h3>
+                        <div id="cart-items" class="cart-items">
+                            <p class="empty-cart">El carrito está vacío</p>
+                        </div>
+
+                        <div class="cart-summary">
+                            <div class="summary-row">
+                                <span>Total USD:</span>
+                                <strong id="total-usd">$0.00</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total Bs (Tasa:</span>
+                                <span id="rate-used">0.00)</span>
+                            </div>
+                            <div class="summary-row total-bs">
+                                <span>Total Bs:</span>
+                                <strong id="total-bs">Bs. 0.00</strong>
+                            </div>
+                            <button id="btn-checkout" class="btn-primary" disabled>
+                                <i class="fas fa-check-circle"></i> Registrar Venta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Historial de Ventas -->
+                    <div class="history-panel">
+                        <h3><i class="fas fa-history"></i> Historial de Ventas</h3>
+                        <div class="filters">
+                            <label>Desde: <input type="date" id="filter-from"></label>
+                            <label>Hasta: <input type="date" id="filter-to"></label>
+                            <button id="btn-filter" class="btn-sm btn-primary">Filtrar</button>
+                        </div>
+                        <div id="sales-history" class="sales-history"></div>
+                        <div class="totals-panel">
+                            <h4>Resumen del Período</h4>
+                            <div id="totals-summary">
+                                <p>Total Vendido: <strong id="sum-total-usd">$0.00</strong></p>
+                                <p>Ganancia Neta: <strong id="sum-profit">$0.00</strong></p>
+                                <p>Costo Recuperado: <strong id="sum-cost">$0.00</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODAL CONFIRMAR VENTA -->
+            <div id="checkout-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Confirmar Venta</h3>
+                        <span class="close-checkout-modal">&times;</span>
+                    </div>
+                    <div class="checkout-summary">
+                        <p>Total a pagar: <strong id="checkout-total-usd">$0.00</strong></p>
+                        <p>Equivalente en Bs: <strong id="checkout-total-bs">Bs. 0.00</strong></p>
+                    </div>
+                    <form id="checkout-form">
+                        <div class="form-row">
+                            <label>Apartamento del Vecino (Opcional)</label>
+                            <input type="text" id="checkout-apto" placeholder="Ej: 4B">
+                        </div>
+                        <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar Venta</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ================= MODAL PARA AGREGAR/EDITAR PRODUCTO ================= -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Nuevo Producto</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-row">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="prod-nombre" required>
+                </div>
+                <div class="form-row">
+                    <label>Costo ($)</label>
+                    <input type="number" id="prod-costo" step="0.01" required>
+                </div>
+                <div class="form-row">
+                    <label>Lugar de Compra</label>
+                    <input type="text" id="prod-lugar">
+                </div>
+                <div class="form-row">
+                    <label>Precio de Venta ($)</label>
+                    <input type="number" id="prod-precio" step="0.01" required>
+                </div>
+                <div class="form-row">
+                    <label>% Ganancia</label>
+                    <input type="number" id="prod-ganancia" step="0.01" required>
+                </div>
+                <div class="form-row">
+                    <label>Stock Actual</label>
+                    <input type="number" id="prod-stock" required>
+                </div>
+                <div class="form-row">
+                    <label>Precios Competencia (Texto)</label>
+                    <input type="text" id="prod-competencia" placeholder="Ej: 1.5, 1.8">
+                </div>
+                <button type="submit" class="btn-primary">Guardar Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>

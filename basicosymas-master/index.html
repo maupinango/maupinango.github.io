@@ -34,9 +34,14 @@
     <div id="app-screen" class="screen">
         <!-- Encabezado -->
         <header class="app-header">
-            <div class="header-info">
+           <div class="header-info">
                 <h2>🛒 Básicos y más</h2>
-                <span id="bcv-rate" class="tasa-badge">Cargando tasa...</span>
+                <div class="tasa-container">
+                    <span id="bcv-rate" class="tasa-badge">Cargando tasa...</span>
+                    <button id="btn-edit-rate" class="btn-icon-small-rate" title="Editar tasa">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
             </div>
             <button id="logout-btn" class="btn-icon" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
         </header>
@@ -54,7 +59,14 @@
             <section id="tab-inventario" class="tab-content active">
                 <div class="section-header">
                     <h3>Productos en Stock</h3>
-                    <button id="btn-add-product" class="btn-primary btn-sm"><i class="fas fa-plus"></i> Nuevo</button>
+                    <div class="header-controls">
+                        <select id="sort-products" class="sort-select">
+                            <option value="nombre-asc">Nombre (A-Z)</option>
+                            <option value="vendidos-desc">Más vendidos</option>
+                            <option value="vendidos-asc">Menos vendidos</option>
+                        </select>
+                        <button id="btn-add-product" class="btn-primary btn-sm"><i class="fas fa-plus"></i> Nuevo</button>
+                    </div>
                 </div>
                 <div id="product-list" class="product-list">
                     <!-- Aquí JS insertará los productos -->
@@ -127,16 +139,23 @@
                     <div class="checkout-summary">
                         <p>Total a pagar: <strong id="checkout-total-usd">$0.00</strong></p>
                         <p>Equivalente en Bs: <strong id="checkout-total-bs">Bs. 0.00</strong></p>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px dashed var(--border);">
+                        <p class="checkout-meta">Costo recuperado: <strong id="checkout-cost">$0.00</strong> <span id="checkout-cost-bs" class="checkout-bs">(Bs. 0.00)</span></p>
+                        <p class="checkout-meta profit">Ganancia neta: <strong id="checkout-profit">$0.00</strong> <span id="checkout-profit-bs" class="checkout-bs">(Bs. 0.00)</span></p>
                     </div>
                     <form id="checkout-form">
                         <div class="form-row">
                             <label>Apartamento del Vecino (Opcional)</label>
                             <input type="text" id="checkout-apto" placeholder="Ej: 4B">
                         </div>
+                        <div class="form-row">
+                            <label>Notas / Referencia (Opcional)</label>
+                            <input type="text" id="checkout-notas" placeholder="Ej: Pagó en efectivo, vuelto pendiente...">
+                        </div>
                         <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Guardar Venta</button>
                     </form>
                 </div>
-            </div>
+                </div>
 
         </main>
     </div>
@@ -179,6 +198,25 @@
                     <input type="text" id="prod-competencia" placeholder="Ej: 1.5, 1.8">
                 </div>
                 <button type="submit" class="btn-primary">Guardar Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR TASA BCV -->
+    <div id="rate-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Actualizar Tasa BCV</h3>
+                <span class="close-rate-modal">&times;</span>
+            </div>
+            <form id="rate-form">
+                <div class="form-row">
+                    <label>Monto en Bolívares por 1 USD</label>
+                    <input type="number" id="rate-input" step="0.01" min="0" placeholder="Ej: 877.90" required>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Guardar Tasa
+                </button>
             </form>
         </div>
     </div>

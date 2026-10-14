@@ -15,8 +15,9 @@
 body { background-color: var(--bg); color: var(--text); }
 
 /* --- Pantallas --- */
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: block; }
+.screen { display: none !important; min-height: 100vh; }
+.screen.active { display: block !important; }
+#login-screen.active { display: flex !important; }
 
 /* --- Login --- */
 #login-screen { display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -119,3 +120,114 @@ body { background-color: var(--bg); color: var(--text); }
 .checkout-summary { background: #e9f5ff; padding: 15px; border-radius: 6px; margin-bottom: 15px; text-align: center; }
 .checkout-summary p { margin: 5px 0; }
 .checkout-summary strong { font-size: 1.2rem; color: var(--primary); }
+
+/* --- Badge de productos vendidos --- */
+.vendidos-badge {
+    font-size: 0.7rem;
+    background: #fff3cd;
+    color: #856404;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+    font-weight: normal;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* --- Controles de cabecera (orden + botón) --- */
+.header-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.sort-select {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: var(--white);
+    cursor: pointer;
+    outline: none;
+    color: var(--text);
+}
+
+.sort-select:focus {
+    border-color: var(--primary);
+}
+
+/* --- Imagen del producto en la tarjeta --- */
+.product-card {
+    align-items: center; /* Alinea verticalmente la imagen con el resto */
+}
+
+.product-thumb {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #f8f9fa;
+    flex-shrink: 0; /* Evita que la imagen se encoja si el nombre es largo */
+    margin-right: 12px;
+}
+
+.product-info {
+    flex: 1; /* El texto ocupa el espacio disponible */
+    min-width: 0; /* Permite que el texto largo se acorte con ellipsis */
+}
+
+.product-info h4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Detalles del checkout (costo y ganancia) --- */
+.checkout-summary .checkout-meta {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin: 3px 0;
+}
+
+.checkout-summary .checkout-meta strong {
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.checkout-summary .checkout-meta.profit strong {
+    color: var(--success);
+}
+
+/* --- Equivalente en Bs dentro del checkout --- */
+.checkout-bs {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-weight: normal;
+}
+
+/* --- Contenedor de tasa con botón de edición --- */
+.tasa-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-icon-small-rate {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: var(--white);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.btn-icon-small-rate:hover {
+    background: rgba(255,255,255,0.35);
+}

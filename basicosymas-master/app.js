@@ -3,8 +3,6 @@
 // ==========================================
 const SUPABASE_URL = 'https://dweecggxuwbuqzbgqomg.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_KL2YZnb2PKD53Mw9GJ0wcA_IaW8dCy6'; 
-const ALLRATES_URL = 'https://allratestoday.com/api/open/central-bank/bcv?source=USD&target=VES';
-const ALLRATES_API_KEY = 'art_live_xqWsqDXRYbfw8dUqb4ZOntEE5pXvWXLF';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -36,15 +34,31 @@ async function checkSession() {
 }
 
 function showApp() {
-    loginScreen.classList.remove('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     appScreen.classList.add('active');
+    
+    loginForm.reset();
+    loginError.textContent = '';
+    
     cargarTasaBCV();
     cargarProductos();
+    cargarProductosCache();
+    cargarHistorialVentas();
 }
 
 function showLogin() {
-    appScreen.classList.remove('active');
+    // Ocultar TODAS las pantallas primero
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    // Luego mostrar solo el login
     loginScreen.classList.add('active');
+    
+    // Limpiar campos del formulario y cualquier mensaje de error previo
+    loginForm.reset();
+    loginError.textContent = '';
+    
+    // Limpiar el carrito y variables globales por seguridad
+    carrito = [];
+    if (typeof renderCarrito === 'function') renderCarrito();
 }
 
 loginForm.addEventListener('submit', async (e) => {
@@ -68,20 +82,88 @@ logoutBtn.addEventListener('click', async () => {
 });
 
 // ==========================================
-// 4. TASA BCV
+// 4. TASA BCV (GESTIÓN MANUAL)
 // ==========================================
 async function cargarTasaBCV() {
     try {
-        const response = await fetch(ALLRATES_URL);
-        const data = await response.json();
-        if (data && data.rate) {
-            bcvRateEl.textContent = `1 USD = ${data.rate.toFixed(2)} VES`;
+        const { data, error } = await _supabase
+            .from('configuracion')
+            .select('valor, actualizado_en')
+            .eq('clave', 'tasa_bcv')
+            .single();
+
+        if (error) {
+            console.error('Error al cargar tasa:', error);
+            bcvRateEl.textContent = 'Tasa no configurada';
+            return;
         }
+
+        const valor = parseFloat(data.valor) || 0;
+        tasaActual = valor;
+
+        if (valor > 0) {
+            const fecha = new Date(data.actualizado_en);
+            const fechaStr = fecha.toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            bcvRateEl.textContent = `1 USD = ${valor.toFixed(2)} Bs (${fechaStr})`;
+        } else {
+            bcvRateEl.textContent = '⚠️ Configura la tasa del día';
+        }
+
+        // Actualizar totales del carrito si aplica
+        if (carrito.length > 0) actualizarTotales();
+
     } catch (error) {
         console.error('Error tasa:', error);
-        bcvRateEl.textContent = 'Tasa no disponible';
+        bcvRateEl.textContent = 'Error al cargar tasa';
     }
 }
+
+// Guardar nueva tasa en Supabase
+async function guardarTasaBCV(nuevaTasa) {
+    const { error } = await _supabase
+        .from('configuracion')
+        .update({ valor: nuevaTasa.toString(), actualizado_en: new Date().toISOString() })
+        .eq('clave', 'tasa_bcv');
+
+    if (error) {
+        alert('Error al guardar la tasa: ' + error.message);
+        return false;
+    }
+    return true;
+}
+
+// --- Modal de edición de tasa ---
+const rateModal = document.getElementById('rate-modal');
+const rateForm = document.getElementById('rate-form');
+const rateInput = document.getElementById('rate-input');
+
+document.getElementById('btn-edit-rate').addEventListener('click', () => {
+    rateInput.value = tasaActual > 0 ? tasaActual.toFixed(2) : '';
+    rateModal.classList.add('active');
+    setTimeout(() => rateInput.focus(), 100);
+});
+
+document.querySelector('.close-rate-modal').addEventListener('click', () => {
+    rateModal.classList.remove('active');
+});
+
+rateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nuevaTasa = parseFloat(rateInput.value);
+
+    if (!nuevaTasa || nuevaTasa <= 0) {
+        alert('Ingresa un monto válido mayor a 0');
+        return;
+    }
+
+    const guardado = await guardarTasaBCV(nuevaTasa);
+    if (guardado) {
+        tasaActual = nuevaTasa;
+        rateModal.classList.remove('active');
+        await cargarTasaBCV();
+        alert(`Tasa actualizada a ${nuevaTasa.toFixed(2)} Bs/USD`);
+    }
+});
 
 // ==========================================
 // 5. CRUD DE PRODUCTOS
@@ -89,18 +171,76 @@ async function cargarTasaBCV() {
 async function cargarProductos() {
     productList.innerHTML = '<p>Cargando productos...</p>';
     
-    const { data, error } = await _supabase
+    // 1. Cargar productos
+    const { data: productos, error: prodError } = await _supabase
         .from('productos')
         .select('*')
         .order('nombre', { ascending: true });
 
-    if (error) {
-        console.error('Error al cargar:', error);
+    if (prodError) {
+        console.error('Error al cargar productos:', prodError);
         productList.innerHTML = '<p>Error al cargar productos.</p>';
         return;
     }
 
-    renderProductos(data);
+    // 2. Cargar todas las ventas realizadas para calcular cantidades vendidas
+    const { data: detalles, error: detError } = await _supabase
+        .from('detalles_ventas')
+        .select('producto_id, cantidad');
+
+    if (detError) {
+        console.error('Error al cargar detalles:', detError);
+    }
+
+    // 3. Crear un mapa de { producto_id: cantidad_total_vendida }
+    const ventasPorProducto = {};
+    if (detalles) {
+        detalles.forEach(d => {
+            if (!ventasPorProducto[d.producto_id]) {
+                ventasPorProducto[d.producto_id] = 0;
+            }
+            ventasPorProducto[d.producto_id] += d.cantidad;
+        });
+    }
+
+    // 4. Agregar el campo "vendidos" a cada producto
+    productosConVentasCache = productos.map(p => ({
+        ...p,
+        vendidos: ventasPorProducto[p.id] || 0
+    }));
+
+    // 5. Aplicar orden y renderizar
+    aplicarOrdenYRenderizar();
+}
+
+// --- Aplicar el orden seleccionado y renderizar ---
+function aplicarOrdenYRenderizar() {
+    const productos = [...productosConVentasCache]; // Copia para no modificar el original
+
+    switch (ordenActual) {
+        case 'nombre-asc':
+            productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            break;
+        case 'vendidos-desc':
+            productos.sort((a, b) => b.vendidos - a.vendidos);
+            break;
+        case 'vendidos-asc':
+            productos.sort((a, b) => a.vendidos - b.vendidos);
+            break;
+        default:
+            productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+    }
+
+    renderProductos(productos);
+}
+
+// --- Escuchar cambios en el selector de orden ---
+const sortSelect = document.getElementById('sort-products');
+if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+        ordenActual = e.target.value;
+        aplicarOrdenYRenderizar();
+    });
 }
 
 function renderProductos(productos) {
@@ -109,22 +249,43 @@ function renderProductos(productos) {
         return;
     }
 
-    productList.innerHTML = productos.map(prod => `
-        <div class="product-card">
-            <div class="product-info">
-                <h4>${prod.nombre}</h4>
-                <p>Costo: $${prod.costo} | Venta: $${prod.precio_venta}</p>
-                <p>Lugar: ${prod.lugar_compra || 'N/A'}</p>
-            </div>
-            <div class="product-stock">
-                <span class="stock-num ${prod.stock_actual <= 2 ? 'low' : ''}">${prod.stock_actual}</span>
-                <div class="product-actions">
-                    <button class="btn-icon-small" onclick="editarProducto(${prod.id})"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon-small delete" onclick="eliminarProducto(${prod.id})"><i class="fas fa-trash"></i></button>
+    // SVG placeholder por si el producto no tiene imagen
+    const imagenDefault = "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <rect width="100" height="100" fill="#e9ecef"/>
+            <text x="50" y="58" font-size="40" text-anchor="middle" fill="#adb5bd">📦</text>
+        </svg>
+    `);
+
+    productList.innerHTML = productos.map(prod => {
+        // Usamos la imagen del producto o la default si no tiene
+        const imagenSrc = prod.imagen_url && prod.imagen_url.trim() !== ''
+            ? prod.imagen_url
+            : imagenDefault;
+
+        return `
+            <div class="product-card">
+                <img 
+                    src="${imagenSrc}" 
+                    alt="${prod.nombre}" 
+                    class="product-thumb"
+                    onerror="this.src='${imagenDefault}'"
+                >
+                <div class="product-info">
+                    <h4>${prod.nombre} <span class="vendidos-badge" title="Unidades vendidas">${prod.vendidos} vendidos</span></h4>
+                    <p>Costo: $${prod.costo} | Venta: $${prod.precio_venta}</p>
+                    <p>Lugar: ${prod.lugar_compra || 'N/A'}</p>
+                </div>
+                <div class="product-stock">
+                    <span class="stock-num ${prod.stock_actual <= 2 ? 'low' : ''}">${prod.stock_actual}</span>
+                    <div class="product-actions">
+                        <button class="btn-icon-small" onclick="editarProducto(${prod.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-icon-small delete" onclick="eliminarProducto(${prod.id})"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Abrir Modal para Nuevo Producto
@@ -194,13 +355,38 @@ window.editarProducto = async (id) => {
 
 // Función global para Eliminar
 window.eliminarProducto = async (id) => {
+    // 1. Verificar si el producto tiene ventas asociadas
+    const { data: ventasAsociadas, error: checkError } = await _supabase
+        .from('detalles_ventas')
+        .select('id')
+        .eq('producto_id', id)
+        .limit(1);
+
+    if (checkError) {
+        alert('Error al verificar ventas asociadas: ' + checkError.message);
+        return;
+    }
+
+    if (ventasAsociadas && ventasAsociadas.length > 0) {
+        alert(
+            '⚠️ No se puede eliminar este producto.\n\n' +
+            'Existen ventas registradas que lo incluyen. ' +
+            'Si deseas ocultarlo, considera dejarlo con stock en 0 en lugar de eliminarlo.\n\n' +
+            'Esto protege el historial de ventas y los reportes.'
+        );
+        return;
+    }
+
+    // 2. Confirmación del usuario
     if (!confirm('¿Estás seguro de eliminar este producto?')) return;
     
+    // 3. Eliminar
     const { error } = await _supabase.from('productos').delete().eq('id', id);
     if (error) {
         alert('Error al eliminar: ' + error.message);
     } else {
-        cargarProductos();
+        await cargarProductos();
+        await cargarProductosCache();
     }
 };
 
@@ -227,6 +413,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 let carrito = [];
 let tasaActual = 0;
 let productosCache = []; // Para búsquedas rápidas
+let productosConVentasCache = []; // Guarda la última lista con ventas calculadas
+let ordenActual = 'nombre-asc'; // Orden actual de la lista
 
 // --- Cargar productos en caché al iniciar ---
 async function cargarProductosCache() {
@@ -355,35 +543,29 @@ function actualizarTotales() {
     document.getElementById('total-bs').textContent = `Bs. ${totalBs.toFixed(2)}`;
 }
 
-// --- Modificar la función cargarTasaBCV para guardar la tasa ---
-// Busca la función cargarTasaBCV y modifícala para que guarde la tasa en la variable global
-// (Reemplaza la función existente con esta)
-async function cargarTasaBCV() {
-    try {
-        const response = await fetch(ALLRATES_URL);
-        const data = await response.json();
-        if (data && data.rate) {
-            tasaActual = parseFloat(data.rate);
-            bcvRateEl.textContent = `1 USD = ${tasaActual.toFixed(2)} VES`;
-            // Si hay items en el carrito, actualizar totales
-            if (carrito.length > 0) actualizarTotales();
-        }
-    } catch (error) {
-        console.error('Error tasa:', error);
-        bcvRateEl.textContent = 'Tasa no disponible';
-    }
-}
-
 // --- Checkout ---
 const checkoutModal = document.getElementById('checkout-modal');
 const checkoutForm = document.getElementById('checkout-form');
 
 document.getElementById('btn-checkout').addEventListener('click', () => {
+    // Total a pagar
     const totalUSD = carrito.reduce((sum, item) => sum + (item.precio_venta * item.cantidad), 0);
     const totalBs = totalUSD * tasaActual;
+
+    // Costo total (dinero invertido que se recupera)
+    const costoTotal = carrito.reduce((sum, item) => sum + (item.costo * item.cantidad), 0);
+    const costoTotalBs = costoTotal * tasaActual;
+
+    // Ganancia neta (utilidad real)
+    const gananciaNeta = totalUSD - costoTotal;
+    const gananciaNetaBs = gananciaNeta * tasaActual;
     
     document.getElementById('checkout-total-usd').textContent = `$${totalUSD.toFixed(2)}`;
     document.getElementById('checkout-total-bs').textContent = `Bs. ${totalBs.toFixed(2)}`;
+    document.getElementById('checkout-cost').textContent = `$${costoTotal.toFixed(2)}`;
+    document.getElementById('checkout-cost-bs').textContent = `(Bs. ${costoTotalBs.toFixed(2)})`;
+    document.getElementById('checkout-profit').textContent = `$${gananciaNeta.toFixed(2)}`;
+    document.getElementById('checkout-profit-bs').textContent = `(Bs. ${gananciaNetaBs.toFixed(2)})`;
     
     checkoutModal.classList.add('active');
 });

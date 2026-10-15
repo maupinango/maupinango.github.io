@@ -215,8 +215,17 @@ async function cargarProductos() {
 
 // --- Aplicar el orden seleccionado y renderizar ---
 function aplicarOrdenYRenderizar() {
-    const productos = [...productosConVentasCache]; // Copia para no modificar el original
+    let productos = [...productosConVentasCache]; // Copia para no modificar el original
 
+    // 1. Filtrar por nombre (si hay texto en el buscador)
+    if (filtroNombre.trim() !== '') {
+        const busqueda = filtroNombre.toLowerCase().trim();
+        productos = productos.filter(p =>
+            p.nombre.toLowerCase().includes(busqueda)
+        );
+    }
+
+    // 2. Ordenar
     switch (ordenActual) {
         case 'nombre-asc':
             productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -231,6 +240,12 @@ function aplicarOrdenYRenderizar() {
             productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
 
+    // 3. Renderizar (con mensaje si no hay resultados)
+    if (productos.length === 0 && filtroNombre.trim() !== '') {
+        productList.innerHTML = `<p class="no-results">No se encontraron productos que coincidan con "<strong>${filtroNombre}</strong>".</p>`;
+        return;
+    }
+
     renderProductos(productos);
 }
 
@@ -239,6 +254,15 @@ const sortSelect = document.getElementById('sort-products');
 if (sortSelect) {
     sortSelect.addEventListener('change', (e) => {
         ordenActual = e.target.value;
+        aplicarOrdenYRenderizar();
+    });
+}
+
+// --- Escuchar cambios en el buscador de productos ---
+const filterInput = document.getElementById('filter-products');
+if (filterInput) {
+    filterInput.addEventListener('input', (e) => {
+        filtroNombre = e.target.value;
         aplicarOrdenYRenderizar();
     });
 }
@@ -415,6 +439,7 @@ let tasaActual = 0;
 let productosCache = []; // Para búsquedas rápidas
 let productosConVentasCache = []; // Guarda la última lista con ventas calculadas
 let ordenActual = 'nombre-asc'; // Orden actual de la lista
+let filtroNombre = ''; // Texto de búsqueda actual
 
 // --- Cargar productos en caché al iniciar ---
 async function cargarProductosCache() {
